@@ -17,7 +17,7 @@ export default async function VideosPage() {
     return (
         <main className="min-h-screen bg-background text-white pb-20">
             <Navbar />
-            <VideosClient initialVideos={videos} categories={categories} />
+            <VideosClient videos={videos} categories={categories} />
         </main>
     );
 }

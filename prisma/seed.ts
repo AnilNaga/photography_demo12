@@ -21,6 +21,20 @@ async function main() {
     })
 
     console.log({ admin })
+
+    // Categories
+    const categories = ['Wedding', 'Pre-Wedding', 'Birthday', 'Traditional', 'Nature'];
+    for (const cat of categories) {
+        await prisma.category.upsert({
+            where: { slug: cat.toLowerCase() },
+            update: {},
+            create: {
+                name: cat,
+                slug: cat.toLowerCase(),
+            }
+        })
+    }
+    console.log('Categories seeded.');
 }
 
 main()

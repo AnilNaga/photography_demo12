@@ -107,8 +107,10 @@ export default function VideosClient({ videos, categories }: VideosClientProps) 
                                         className="absolute inset-0 flex items-center justify-center bg-black/40 group-hover:bg-black/20 transition-colors cursor-none"
                                         onClick={() => {
                                             const v = document.querySelector(`video[src="${video.videoUrl}"]`) as HTMLVideoElement;
-                                            v?.play();
-                                            setPlayingId(video.id);
+                                            if (v) {
+                                                v.play().catch(() => { /* Ignore AbortError if paused immediately */ });
+                                                setPlayingId(video.id);
+                                            }
                                         }}
                                     >
                                         <div className="relative">

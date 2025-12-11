@@ -37,6 +37,14 @@ export default function UploadModal({ isOpen, onClose, categories }: UploadModal
 
         setLoading(true);
 
+        // Check for missing configuration
+        const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+        if (!supabaseUrl || supabaseUrl.includes("placeholder")) {
+            alert("CONFIGURATION ERROR: Supabase is not connected.\n\nPlease add NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY to your .env file (local) or Vercel Environment Variables (production).\n\nUploads require a cloud storage backend.");
+            setLoading(false);
+            return;
+        }
+
         try {
             // 1. Upload Files to Supabase Storage
             const urls: string[] = [];

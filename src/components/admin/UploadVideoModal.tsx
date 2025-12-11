@@ -37,6 +37,14 @@ export default function UploadVideoModal({ isOpen, onClose, categories }: Upload
         setLoading(true);
 
         try {
+            // Check for missing configuration
+            const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+            if (!supabaseUrl || supabaseUrl.includes("placeholder")) {
+                alert("CONFIGURATION ERROR: Supabase is not connected.\n\nPlease add NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY to your .env file (local) or Vercel Environment Variables (production).\n\nUploads require a cloud storage backend.");
+                setLoading(false);
+                return;
+            }
+
             // 1. Upload File to Supabase Storage
             const filename = `${Date.now()}_${file.name.replaceAll(" ", "_")}`;
             const { data, error } = await supabase.storage

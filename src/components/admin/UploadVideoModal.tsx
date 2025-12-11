@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { supabase } from "@/lib/supabaseClient";
 
 interface Category {
     id: string;
@@ -36,25 +37,26 @@ export default function UploadVideoModal({ isOpen, onClose, categories }: Upload
         setLoading(true);
 
         try {
-            // 1. Upload File
-            const uploadData = new FormData();
-            uploadData.append("file", file);
+            // 1. Upload File to Supabase Storage
+            const filename = `${Date.now()}_${file.name.replaceAll(" ", "_")}`;
+            const { data, error } = await supabase.storage
+                .from('videos') // Assuming 'videos' bucket exists. If not, this needs to be 'uploads' or created.
+                .upload(filename, file);
 
-            const uploadRes = await fetch("/api/upload", {
-                method: "POST",
-                body: uploadData,
-            });
+            if (error) throw error;
 
-            if (!uploadRes.ok) throw new Error("File upload failed");
-            const { url } = await uploadRes.json();
+            // Get Public URL
+            const { data: { publicUrl } } = supabase.storage
+                .from('videos')
+                .getPublicUrl(filename);
 
-            // 2. Create Video Record
+            // 2. Create Video Record in DB
             const res = await fetch("/api/videos", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     ...formData,
-                    videoUrl: url,
+                    videoUrl: publicUrl,
                 }),
             });
 
@@ -68,7 +70,7 @@ export default function UploadVideoModal({ isOpen, onClose, categories }: Upload
             setFormData({ title: "", description: "", categoryId: "" });
         } catch (error: any) {
             console.error(error);
-            alert("Error: " + error.message);
+            alert("Error: " + (error.message || "Upload failed"));
         } finally {
             setLoading(false);
         }

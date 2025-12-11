@@ -6,9 +6,15 @@ import CreateServiceButton from "@/components/admin/CreateServiceButton";
 export const dynamic = 'force-dynamic';
 
 export default async function AdminServicesPage() {
-    const services = await prisma.service.findMany({
+    const dbServices = await prisma.service.findMany({
         orderBy: { name: "asc" },
     });
+
+    const services = dbServices.map(service => ({
+        ...service,
+        priceFrom: service.priceFrom ? service.priceFrom.toNumber() : null,
+        priceTo: service.priceTo ? service.priceTo.toNumber() : null,
+    }));
 
     return (
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-5 duration-500">

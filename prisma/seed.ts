@@ -22,6 +22,20 @@ async function main() {
 
     console.log({ admin })
 
+    const userAnil = await prisma.user.upsert({
+        where: { email: 'anil@gmail.com' },
+        update: {
+            passwordHash: await hash('123456', 12),
+        },
+        create: {
+            email: 'anil@gmail.com',
+            name: 'Anil Naga',
+            passwordHash: await hash('123456', 12),
+            role: 'ADMIN',
+        },
+    })
+    console.log({ userAnil })
+
     // Categories
     const categories = ['Wedding', 'Pre-Wedding', 'Birthday', 'Traditional', 'Nature'];
     for (const cat of categories) {

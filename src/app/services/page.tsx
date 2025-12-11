@@ -7,9 +7,15 @@ import { Clock, DollarSign } from "lucide-react";
 export const dynamic = 'force-dynamic';
 
 export default async function ServicesPage() {
-    const services = await prisma.service.findMany({
+    const dbServices = await prisma.service.findMany({
         orderBy: { name: "asc" }
     });
+
+    const services = dbServices.map(service => ({
+        ...service,
+        priceFrom: service.priceFrom ? service.priceFrom.toNumber() : null,
+        priceTo: service.priceTo ? service.priceTo.toNumber() : null,
+    }));
 
     return (
         <main className="min-h-screen bg-background text-white pb-20">

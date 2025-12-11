@@ -42,6 +42,14 @@ export default function GalleryClient({ initialPhotos, categories }: GalleryClie
     const [filter, setFilter] = useState(initialCategory);
     const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null);
 
+    // Update filter when URL changes (e.g. navigation from Home)
+    useEffect(() => {
+        const cat = searchParams.get("category");
+        if (cat) {
+            setFilter(cat);
+        }
+    }, [searchParams]);
+
     // Filter Logic
     const filteredPhotos = filter === "All"
         ? initialPhotos

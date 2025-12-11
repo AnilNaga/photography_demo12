@@ -23,6 +23,14 @@ export async function POST(request: Request) {
             where: { email },
         });
 
+        console.log("Login Attempt:", email);
+        console.log("User Found:", user ? "YES" : "NO");
+
+        if (user) {
+            const isValid = await verifyPassword(password, user.passwordHash);
+            console.log("Password Valid:", isValid);
+        }
+
         if (!user || !(await verifyPassword(password, user.passwordHash))) {
             return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
         }

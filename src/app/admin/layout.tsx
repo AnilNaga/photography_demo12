@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
     LayoutDashboard,
     Image as ImageIcon,
@@ -24,6 +24,20 @@ const links = [
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
+    const router = useRouter();
+
+    const handleLogout = async () => {
+        try {
+            await fetch("/api/auth/logout", { method: "POST" });
+            router.push("/admin/login");
+        } catch (error) {
+            console.error("Logout failed", error);
+        }
+    };
+
+    if (pathname?.startsWith("/admin/login")) {
+        return <>{children}</>;
+    }
 
     return (
         <div className="min-h-screen bg-[#0a0a0a] flex">
@@ -56,7 +70,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 </nav>
 
                 <div className="p-4 border-t border-white/10">
-                    <button className="flex items-center gap-3 px-4 py-3 w-full text-left text-white/60 hover:text-red-400 hover:bg-red-500/10 rounded-xl transition-colors">
+                    <button
+                        onClick={handleLogout}
+                        className="flex items-center gap-3 px-4 py-3 w-full text-left text-white/60 hover:text-red-400 hover:bg-red-500/10 rounded-xl transition-colors"
+                    >
                         <LogOut className="w-5 h-5" />
                         <span className="text-sm font-medium">Sign Out</span>
                     </button>
